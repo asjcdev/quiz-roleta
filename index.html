@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz da Roleta - Níveis</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1e1e1e;
+      color: #00ffff;
+      text-align: center;
+      padding: 20px;
+    }
+    .card {
+      background-color: #2a2a2a;
+      padding: 20px 15px;
+      margin: auto;
+      max-width: 310px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+    }
+    button {
+      margin: 10px 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: linear-gradient(to bottom, #4f4f4f, #2e2e2e);
+      color: white;
+      box-shadow: inset 0 0 2px #ffffff44, 0 0 5px #00000066;
+      transition: all 0.2s ease-in-out;
+    }
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px #00ffff55;
+    }
+    .toggle-group {
+      margin-bottom: 15px;
+    }
+    #feedback {
+      font-weight: bold;
+      margin-top: 15px;
+      color: #00ffff;
+    }
+    input {
+      padding: 8px;
+      width: 80%;
+      font-size: 16px;
+      background-color: #2e2e2e;
+      color: white;
+      border: 1px solid #555;
+      border-radius: 5px;
+    }
+    .correct {
+      color: #00ff88;
+      font-weight: bold;
+    }
+    .wrong {
+      color: #ff4444;
+      font-weight: bold;
+      
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="toggle-group" id="config">
+      <strong>Escolha a quantidade de vizinhos:</strong><br>
+      <button onclick="setNeighbors(1)">1</button>
+      <button onclick="setNeighbors(2)">2</button>
+      <button onclick="setNeighbors(3)">3</button>
+    </div>
+    <h2 id="status"></h2>
+    <h3 id="question"></h3>
+    <div id="options"></div>
+    <div id="input-area" style="display:none;">
+      <p>Digite os vizinhos (ex: 0, 15):</p>
+      <input type="text" id="vizinhos-input" placeholder="Ex: 0, 15" />
+      <br />
+      <button onclick="checkTypedVizinhos()">Verificar</button>
+    </div>
+    <p id="feedback"></p>
+    <button onclick="nextQuestion()">Próxima</button>
+  </div>
+
+  <script>
+    const roleta = [
+      0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23,
+      10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26
+    ];
+
+    const setores = {
+      "Voisins": [22,18,29,7,28,12,35,3,26,0,32,15,19,4,21,2,25],
+      "Orphelins": [1,20,14,31,9,17,34,6],
+      "Tier": [27,13,36,11,30,8,23,10,5,24,16,33]
+    };
+
+    let nivel = 1;
+    let neighborCount = 1;
+    let perguntas = [];
+    let current = 0;
+    let tentativas = 1;
+    let acertos = 0;
+
+    function embaralhar(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
+    function getSetor(num) {
+      for (let key in setores) {
+        if (setores[key].includes(num)) return key;
+      }
+      return "Desconhecido";
+    }
+
+    function getVizinhos(num, n) {
+      const idx = roleta.indexOf(num);
+      const viz = [];
+      for (let i = -n; i <= n; i++) {
+        if (i !== 0) {
+          const pos = (idx + i + roleta.length) % roleta.length;
+          viz.push(roleta[pos]);
+        }
+      }
+      return viz;
+    }
+
+    function setNeighbors(n) {
+      neighborCount = n;
+      iniciarNivel(1);
+    }
+
+    function iniciarNivel(n) {
+      nivel = n;
+      current = 0;
+      acertos = 0;
+      document.getElementById("feedback").textContent = "";
+      document.getElementById("vizinhos-input").value = "";
+      document.getElementById("input-area").style.display = "none";
+
+      const novos = roleta.map(num => ({
+        num,
+        sector: getSetor(num),
+        vizinhos: getVizinhos(num, neighborCount)
+      }));
+
+      perguntas = embaralhar(novos);
+      atualizarStatus();
+      showQuestion();
+    }
+
+    function atualizarStatus() {
+      const status = document.getElementById("status");
+      status.textContent = `Nível ${nivel} | Tentativa ${tentativas} | Progresso: ${acertos}/37`;
+    }
+
+    function showQuestion() {
+      const q = perguntas[current];
+      const question = document.getElementById("question");
+      const options = document.getElementById("options");
+      const inputArea = document.getElementById("input-area");
+      const feedback = document.getElementById("feedback");
+
+      feedback.textContent = "";
+      inputArea.style.display = "none";
+      document.getElementById("vizinhos-input").value = "";
+
+      if (nivel === 1) {
+        question.textContent = `Número ${q.num} pertence a qual setor?`;
+        options.innerHTML = "";
+        ["Voisins", "Tier", "Orphelins"].forEach(opt => {
+          const btn = document.createElement("button");
+          btn.textContent = opt;
+          btn.onclick = () => checkSectorAnswer(opt);
+          options.appendChild(btn);
+        });
+      } else {
+        question.textContent = `Digite os vizinhos do número ${q.num}`;
+        options.innerHTML = "";
+        inputArea.style.display = "block";
+      }
+    }
+
+    function checkSectorAnswer(answer) {
+      const q = perguntas[current];
+      const feedback = document.getElementById("feedback");
+      if (answer === q.sector) {
+        acertos++;
+        feedback.innerHTML = `<span class='correct'>Correto!</span>`;
+        proximaPergunta();
+      } else {
+        feedback.innerHTML = `<span class='wrong'>Errado! Era ${q.sector}. Reiniciando nível...</span>`;
+        tentativas++;
+        setTimeout(() => iniciarNivel(1), 2000);
+      }
+    }
+
+    function checkTypedVizinhos() {
+      const q = perguntas[current];
+      const input = document.getElementById("vizinhos-input").value;
+      const resposta = input.split(",").map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+      const corretos = q.vizinhos.slice().sort((a, b) => a - b);
+      const user = resposta.slice().sort((a, b) => a - b);
+      const feedback = document.getElementById("feedback");
+
+      const iguais = JSON.stringify(user) === JSON.stringify(corretos);
+      if (iguais) {
+        acertos++;
+        feedback.innerHTML = `<span class='correct'>Correto!</span>`;
+        proximaPergunta();
+      } else {
+        feedback.innerHTML = `<span class='wrong'>Errado! Corretos: ${corretos.join(", ")}. Reiniciando nível...</span>`;
+        tentativas++;
+        setTimeout(() => iniciarNivel(2), 3000);
+      }
+    }
+
+    function proximaPergunta() {
+      current++;
+      atualizarStatus();
+      if (acertos >= 37) {
+        if (nivel === 1) {
+          document.getElementById("feedback").innerHTML = `<span class='correct'>Parabéns! Você completou o Nível 1! Vamos para o Nível 2.</span>`;
+          setTimeout(() => iniciarNivel(2), 3000);
+        } else {
+          document.getElementById("feedback").innerHTML = `<span class='correct'>Você concluiu o Nível 2! 👏 Em breve desbloquearemos o próximo nível visual!</span>`;
+        }
+      } else {
+        showQuestion();
+      }
+    }
+
+    iniciarNivel(1);
+  </script>
+</body>
+</html>
