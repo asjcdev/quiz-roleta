@@ -37,7 +37,7 @@ Ainda não sou profissional da área, mas estou me dedicando a aprender de forma
 
 ## 🌐 Acesse o projeto online
 
-🔗 [Clique aqui para jogar](https://SEU-USUARIO.github.io/quiz-roleta/)  
+🔗[Clique aqui para jogar]🔗(https://asjcdev.github.io/quiz-roleta/)
 (Atualize o link conforme o nome do repositório no GitHub Pages)
 
 ---
@@ -45,5 +45,5 @@ Ainda não sou profissional da área, mas estou me dedicando a aprender de forma
 ## 📬 Contato
 
 - 📧 andre.ws@msn.com  
-- 💻 [LinkedIn](https://linkedin.com/in/asjcdev)  
+- 💻 [LinkedIn](https://linkedin.com/in/asjcde)  
 - 🧠 Projeto criado com apoio de IA e aprendizado próprio
