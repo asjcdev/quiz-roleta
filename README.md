@@ -39,8 +39,8 @@ Ainda não sou profissional da área, mas estou me dedicando a aprender de forma
 
 👉 [Clique aqui para jogar](https://asjcdev.github.io/quiz-roleta/)
 
-
 ---
+🚀 Projeto em aprendizado contínuo. Toda sugestão é bem-vinda!
 
 ## 📬 Contato
 
