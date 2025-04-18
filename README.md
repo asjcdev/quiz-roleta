@@ -37,8 +37,8 @@ Ainda não sou profissional da área, mas estou me dedicando a aprender de forma
 
 ## 🌐 Acesse o projeto online
 
-🔗[Clique aqui para jogar]🔗(https://asjcdev.github.io/quiz-roleta/)
-(Atualize o link conforme o nome do repositório no GitHub Pages)
+👉 [Clique aqui para jogar](https://asjcdev.github.io/quiz-roleta/)
+
 
 ---
 
